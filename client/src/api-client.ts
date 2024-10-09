@@ -8,10 +8,14 @@ import {
 } from "./shared/types";
 import { BookingFormData } from "./forms/BookingForm/BookingForm";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+import Cookies from 'js-cookie'
+
+const token = Cookies.get('auth_token');
 
 export const fetchCurrentUser = async (): Promise<UserType> => {
   const response = await fetch(`${API_BASE_URL}/api/users/me`, {
     credentials: "include",
+    headers: { 'Authorization': `Bearer ${token}` }
   });
   if (!response.ok) {
     throw new Error("Error fetching user");
@@ -80,6 +84,7 @@ export const addMyHotel = async (hotelFormData: FormData) => {
   const response = await fetch(`${API_BASE_URL}/api/my-hotels`, {
     method: "POST",
     credentials: "include",
+    headers: { 'Authorization': `Bearer ${token}` },
     body: hotelFormData,
   });
 
@@ -93,6 +98,7 @@ export const addMyHotel = async (hotelFormData: FormData) => {
 export const fetchMyHotels = async (): Promise<HotelType[]> => {
   const response = await fetch(`${API_BASE_URL}/api/my-hotels`, {
     credentials: "include",
+    headers: { 'Authorization': `Bearer ${token}` }
   });
 
   if (!response.ok) {
@@ -105,6 +111,7 @@ export const fetchMyHotels = async (): Promise<HotelType[]> => {
 export const fetchMyHotelById = async (hotelId: string): Promise<HotelType> => {
   const response = await fetch(`${API_BASE_URL}/api/my-hotels/${hotelId}`, {
     credentials: "include",
+    headers: { 'Authorization': `Bearer ${token}` }
   });
 
   if (!response.ok) {
@@ -120,6 +127,7 @@ export const updateMyHotelById = async (hotelFormData: FormData) => {
     {
       method: "PUT",
       body: hotelFormData,
+      headers: { 'Authorization': `Bearer ${token}` },
       credentials: "include",
     }
   );
@@ -206,6 +214,7 @@ export const createPaymentIntent = async (
       body: JSON.stringify({ numberOfNights }),
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${token}`
       },
     }
   );
@@ -224,6 +233,7 @@ export const createRoomBooking = async (formData: BookingFormData) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'Authorization': `Bearer ${token}`
       },
       credentials: "include",
       body: JSON.stringify(formData),
@@ -238,6 +248,7 @@ export const createRoomBooking = async (formData: BookingFormData) => {
 export const fetchMyBookings = async (): Promise<HotelType[]> => {
   const response = await fetch(`${API_BASE_URL}/api/my-bookings`, {
     credentials: "include",
+    headers: { 'Authorization': `Bearer ${token}` }
   });
 
   if (!response.ok) {
