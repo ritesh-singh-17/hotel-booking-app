@@ -10,9 +10,9 @@ import { BookingFormData } from "./forms/BookingForm/BookingForm";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 import Cookies from 'js-cookie'
 
-const token = Cookies.get('auth_token');
 
 export const fetchCurrentUser = async (): Promise<UserType> => {
+  const token = Cookies.get('access_token');
   const response = await fetch(`${API_BASE_URL}/api/users/me`, {
     credentials: "include",
     headers: { 'Authorization': `Bearer ${token}` }
@@ -38,6 +38,7 @@ export const register = async (formData: RegisterFormData) => {
   if (!response.ok) {
     throw new Error(responseBody.message);
   }
+  Cookies.set('access_token', responseBody.token);
 };
 
 export const signIn = async (formData: SignInFormData) => {
@@ -50,16 +51,19 @@ export const signIn = async (formData: SignInFormData) => {
     body: JSON.stringify(formData),
   });
 
-  const body = await response.json();
+  const responseBody = await response.json();
   if (!response.ok) {
-    throw new Error(body.message);
+    throw new Error(responseBody.message);
   }
-  return body;
+  Cookies.set('access_token', responseBody.token);
+  return responseBody;
 };
 
 export const validateToken = async () => {
+  const token = Cookies.get('access_token');
   const response = await fetch(`${API_BASE_URL}/api/auth/validate-token`, {
     credentials: "include",
+    headers: { 'Authorization': `Bearer ${token}` }
   });
 
   if (!response.ok) {
@@ -78,9 +82,12 @@ export const signOut = async () => {
   if (!response.ok) {
     throw new Error("Error during sign out");
   }
+  
+  Cookies.remove('access_token')
 };
 
 export const addMyHotel = async (hotelFormData: FormData) => {
+  const token = Cookies.get('access_token');
   const response = await fetch(`${API_BASE_URL}/api/my-hotels`, {
     method: "POST",
     credentials: "include",
@@ -96,6 +103,7 @@ export const addMyHotel = async (hotelFormData: FormData) => {
 };
 
 export const fetchMyHotels = async (): Promise<HotelType[]> => {
+  const token = Cookies.get('access_token');
   const response = await fetch(`${API_BASE_URL}/api/my-hotels`, {
     credentials: "include",
     headers: { 'Authorization': `Bearer ${token}` }
@@ -109,6 +117,7 @@ export const fetchMyHotels = async (): Promise<HotelType[]> => {
 };
 
 export const fetchMyHotelById = async (hotelId: string): Promise<HotelType> => {
+  const token = Cookies.get('access_token');
   const response = await fetch(`${API_BASE_URL}/api/my-hotels/${hotelId}`, {
     credentials: "include",
     headers: { 'Authorization': `Bearer ${token}` }
@@ -122,6 +131,7 @@ export const fetchMyHotelById = async (hotelId: string): Promise<HotelType> => {
 };
 
 export const updateMyHotelById = async (hotelFormData: FormData) => {
+  const token = Cookies.get('access_token');
   const response = await fetch(
     `${API_BASE_URL}/api/my-hotels/${hotelFormData.get("hotelId")}`,
     {
@@ -206,6 +216,7 @@ export const createPaymentIntent = async (
   hotelId: string,
   numberOfNights: string
 ): Promise<PaymentIntentResponse> => {
+  const token = Cookies.get('access_token');
   const response = await fetch(
     `${API_BASE_URL}/api/hotels/${hotelId}/bookings/payment-intent`,
     {
@@ -227,6 +238,7 @@ export const createPaymentIntent = async (
 };
 
 export const createRoomBooking = async (formData: BookingFormData) => {
+  const token = Cookies.get('access_token');
   const response = await fetch(
     `${API_BASE_URL}/api/hotels/${formData.hotelId}/bookings`,
     {
@@ -246,6 +258,7 @@ export const createRoomBooking = async (formData: BookingFormData) => {
 };
 
 export const fetchMyBookings = async (): Promise<HotelType[]> => {
+  const token = Cookies.get('access_token');
   const response = await fetch(`${API_BASE_URL}/api/my-bookings`, {
     credentials: "include",
     headers: { 'Authorization': `Bearer ${token}` }
